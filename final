@@ -1,0 +1,261 @@
+package C;
+import java.util.ArrayList;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.Iterator;
+import java.util.Scanner;
+import java.io.*;
+public class finals{
+    public static void main(String[] args) {
+        enum TaskStatus {
+            NEW,
+            DONE
+        }
+        class Task implements C.Task {
+            private String title;
+            private Date duedate;
+            private TaskStatus status;
+            private String task;
+
+            public Task(String title, Date duedate, String task) {
+                this.title = title;
+                this.duedate = duedate;
+                this.status = TaskStatus.NEW;
+                this.task = task;
+            }
+
+            public String getTitle() {
+                return title;
+            }
+
+            public void setTitle(String title) {
+                this.title = title;
+            }
+
+            public void setDuedate(Date duedate) {
+                this.duedate = duedate;
+            }
+
+            public void setStatus(TaskStatus status) {
+                this.status = status;
+            }
+
+            public void setTask(String task) {
+                this.task = task;
+            }
+            
+            public String fulltask() {
+                return "Task \n[\n title=" + title + "\n due date=" + duedate + "\n status=" + status + "\n task="
+                        + task
+                        + "\n]\n";
+            }
+
+            @Override
+            public int hashCode() {
+                final int prime = 31;
+                int result = 1;
+                result = prime * result + ((title == null) ? 0 : title.hashCode());
+                result = prime * result + ((duedate == null) ? 0 : duedate.hashCode());
+                result = prime * result + ((status == null) ? 0 : status.hashCode());
+                result = prime * result + ((task == null) ? 0 : task.hashCode());
+                return result;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                if (this == obj)
+                    return true;
+                if (obj == null)
+                    return false;
+                if (getClass() != obj.getClass())
+                    return false;
+                Task other = (Task) obj;
+                if (title == null) {
+                    if (other.title != null)
+                        return false;
+                } else if (!title.equals(other.title))
+                    return false;
+                if (duedate == null) {
+                    if (other.duedate != null)
+                        return false;
+                } else if (!duedate.equals(other.duedate))
+                    return false;
+                if (status != other.status)
+                    return false;
+                if (task == null) {
+                    return other.task == null;
+                } else return task.equals(other.task);
+            }
+        }
+
+         class storetasks {
+            private final ArrayList<Task> tasks;
+            private static final String datef = "dd-mm-yyyy";
+
+            public storetasks() {
+                tasks = new ArrayList<>();
+            }
+
+            public storetasks(ArrayList<Task> tasks) {
+                this.tasks = tasks;
+            }
+
+            public void addTask(String title, String duedate, String task) {
+                if (title.equals("")) {
+                    System.out.println("Failed");
+                    return;
+                }
+                Date date;
+                try {
+                    SimpleDateFormat formatter = new SimpleDateFormat(datef);
+                    date = formatter.parse(duedate);
+                } catch (Exception e) {
+                    System.out.println("Failed");
+                    return;
+                }
+                this.tasks.add(new Task(title, date, task));
+                System.out.println("Successfully added");
+            }
+
+            public void taskdone(String title) {
+                boolean done = false;
+                for (Task t : this.tasks) {
+                    if (t.getTitle().equals(title)) {
+                        t.setStatus(TaskStatus.DONE);
+                        done = true;
+                    }
+                }
+                if (done) {
+                    System.out.println("Success");
+                } else {
+                    System.out.println("Failed");
+                }
+
+            }
+
+            public void removetask(String title) {
+                boolean done = false;
+                Iterator<Task> itr = this.tasks.iterator();
+                while (itr.hasNext()) {
+                    Task t = itr.next();
+                    if (t.getTitle().equals(title)) {
+                        itr.remove();
+                        done = true;
+                    }
+                }
+                if (done) {
+                    System.out.println("Success");
+                } else {
+                    System.out.println("Failed");
+                }
+            }
+
+            public void edittask(String title, String newTitle, String newDuedate, String newTask) {
+                boolean done = false;
+                for (Task t : this.tasks) {
+                    if (t.getTitle().equals(title)) {
+                        if (!newDuedate.equals("")) {
+                            Date date;
+                            try {
+                                SimpleDateFormat formatter = new SimpleDateFormat(datef);
+                                date = formatter.parse(newDuedate);
+                            } catch (Exception e) {
+                                System.out.println("Failed");
+                                return;
+                            }
+                            t.setDuedate(date);
+                        }
+                        if (!newTitle.equals("")) {
+                            t.setTitle(newTitle);
+                        }
+                        if (!newTask.equals("")) {
+                            t.setTask(newTask);
+                        }
+                        done = true;
+                    }
+                }
+                if (done) {
+                    System.out.println("Success");
+                } else {
+                    System.out.println("Failed");
+                }
+            }
+
+            public void tasklist() {
+                for (Task t : this.tasks) {
+                    System.out.print(t);
+                }
+            }
+
+        }
+        class Todo {
+            public static void Menu() {
+                System.out.println("To-do list: What would you like to do?");
+                System.out.println("1: Add new task");
+                System.out.println("2: Mark task done");
+                System.out.println("4: Remove task");
+                System.out.println("5: Edit task");
+                System.out.println("6: Display all tasks");
+                System.out.println("7: Exit");
+            }
+
+            public static void main(String[] args) {
+                storetasks TasksList = new storetasks();
+                Scanner input = new Scanner(System.in);
+                int number = 1;
+                while (number != 7) {
+                    switch (number) {
+                        case 1: {
+                            Menu();
+                            break;
+                        }
+                        case 2: {
+                            System.out.println("Title");
+                            String title = input.nextLine();
+                            System.out.println("Task due date:");
+                            String date = input.nextLine();
+                            System.out.println("Description");
+                            String task = input.nextLine();
+                            TasksList.addTask(title, date, task);
+                            break;
+                        }
+                        case 3: {
+                            System.out.println("Enter task title:");
+                            String title = input.nextLine();
+                            TasksList.taskdone(title);
+                            break;
+                        }
+                        case 4: {
+                            System.out.println("Enter task to remove");
+                            String title = input.nextLine();
+                            TasksList.removetask(title);
+                            break;
+                        }
+                        case 5: {
+                            System.out.println("Enter task to edit");
+                            String title = input.nextLine();
+                            System.out.println("New title:");
+                            String newTitle = input.nextLine();
+                            System.out.println("New due date:");
+                            String date = input.nextLine();
+                            System.out.println("New task:");
+                            String task = input.nextLine();
+                            TasksList.edittask(title, newTitle, date, task);
+                            break;
+                        }
+                        case 6: {
+                            TasksList.tasklist();
+                            break;
+                        }
+                        default: {
+                            System.out.println("Invalid");
+                        }
+                    }
+
+                    }
+
+                }
+            }
+        }
+    }
+
